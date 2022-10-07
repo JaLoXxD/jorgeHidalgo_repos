@@ -1,19 +1,15 @@
-import {Sequelize} from "sequelize-cockroachdb";
+import { Sequelize } from "sequelize-cockroachdb";
+import * as dotenv from "dotenv";
 
-export class Database{
-    private _client: Sequelize;
-
-    async startConnection(){
-        try {
-            this._client = new Sequelize(process.env.DATABASE_URL);
-            console.log('database connected...');
-        } catch (error) {
-            console.log('connection error...');
-        }
-    }
-    
-    public get client() : Sequelize {
-        return this._client;
-    }
-    
+dotenv.config();
+export const client: Sequelize = new Sequelize(process.env.DATABASE_URL, { logging: false });
+export class Database {
+	async startConnection() {
+		try {
+			await client.authenticate();
+			console.log("database connected...");
+		} catch (error) {
+			console.log("connection error...");
+		}
+	}
 }
