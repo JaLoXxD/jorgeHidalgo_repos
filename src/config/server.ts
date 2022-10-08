@@ -1,9 +1,13 @@
-import * as express from "express";
-import { Express /*,  Request, Response  */ } from "express";
-import * as bodyParser from "body-parser";
-import * as dotenv from "dotenv";
+import express from "express";
+import { Express } from "express";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import cors from "cors";
 import { client, Database } from "./database";
 import { router } from "../routes/index";
+import { organizationModel, tribeModel } from "../models";
+import { repositoryModel } from "../models/repository";
+import { metricsModel } from "../models/metrics";
 
 export class Server {
 	private _port: string | number;
@@ -14,8 +18,9 @@ export class Server {
 
 	private _setMiddlewares() {
 		dotenv.config();
-		this._app.use(bodyParser.json());
+		this._app.use(cors());
 		this._app.use(bodyParser.urlencoded({ extended: true }));
+		this._app.use(bodyParser.json());
 	}
 
 	private _setPort() {
@@ -23,35 +28,31 @@ export class Server {
 		this._app.set("port", this._port);
 	}
 
-	// private _buildModels(sequelize: Sequelize) {
-	//     return new Promise((resolve, reject)=>{
-	//         this._organizationModel = new OrganizationModel(sequelize);
-	//         const organization = this._organizationModel.buildModel();
-	//         this._tribeModel = new TribeModel(sequelize);
-	//         const tribe = this._tribeModel.buildModel();
-	//         this._repositoryModel = new RepositoryModel(sequelize);
-	//         this._repository = this._repositoryModel.buildModel();
-	//         this._metricsModel = new MetricsModel(sequelize);
-	//         const metrics = this._metricsModel.buildModel();
-	//         /* RELATIONSHIP */
-	//         organization.hasMany(tribe);
-	//         tribe.hasMany(this._repository);
-	//         this._repository.hasMany(metrics);
-	//         console.log('finish')
-	//         resolve(true);
-	//     })
-	// }
+	private _createAssociations() {
+		organizationModel.hasMany(tribeModel, { foreignKey: "id_organization", onDelete: "CASCADE" });
+		tribeModel.belongsTo(organizationModel, { foreignKey: "id_organization", onDelete: "CASCADE" });
+		tribeModel.hasMany(repositoryModel, { foreignKey: "id_tribe", onDelete: "CASCADE" });
+		repositoryModel.belongsTo(tribeModel, { foreignKey: "id_tribe", onDelete: "CASCADE" });
+		repositoryModel.hasOne(metricsModel, { foreignKey: "id_repository", onDelete: "CASCADE" });
+		metricsModel.belongsTo(repositoryModel, { foreignKey: "id_repository", onDelete: "CASCADE" });
+	}
+
+	startTestingServer() {
+		this._setMiddlewares();
+		this._createAssociations();
+		this._app.use(router);
+		return this._app;
+	}
 
 	startServer() {
 		this._setMiddlewares();
 		this._database.startConnection();
 		this._setPort();
-		/* this._buildModels(this._database.client).then(()=>{
-        }); */ this._app.use(router);
+		this._app.use(router);
+		this._createAssociations();
+		client.sync({ force: false });
 		this._app.listen(this._app.get("port"), () => {
 			console.log(`Server listening on port ${this._app.get("port")}`);
 		});
-		// this._database.client.sync({ force: true });
-		client.sync({ force: true });
 	}
 }
