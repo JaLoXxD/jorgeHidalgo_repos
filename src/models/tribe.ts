@@ -1,25 +1,23 @@
-import { Sequelize, DataTypes } from "sequelize-cockroachdb";
+import { DataTypes, ModelStatic, Model } from "sequelize-cockroachdb";
+import { client } from "../config/database";
 
-export class TribeModel {
-	constructor(private _sequelize: Sequelize) {}
-
-	buildModel() {
-		const tribeModel = this._sequelize.define("tribe", {
-			id_tribe: {
-				type: DataTypes.INTEGER,
-				primaryKey: true,
-				autoIncrement: true,
-				allowNull: false,
-			},
-			name: {
-				type: DataTypes.STRING(50),
-				allowNull: false,
-			},
-			status: {
-				type: DataTypes.INTEGER,
-				allowNull: false,
-			},
-		});
-		return tribeModel;
-	}
-}
+export const tribeModel: ModelStatic<Model> = client.define(
+	"tribe",
+	{
+		id_tribe: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
+			allowNull: false,
+		},
+		name: {
+			type: DataTypes.STRING(50),
+			allowNull: false,
+		},
+		status: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+	},
+	{ createdAt: false, updatedAt: false }
+);
