@@ -18,7 +18,7 @@ describe("task 3 tests", () => {
 	});
 
 	it("should return an array of repositories", async () => {
-		const req = await request(app.startTestingServer()).get("/api/v1/metrics/803457101829603329");
+		const req = await request(app.startTestingServer()).get("/api/v1/metrics/803475886793883650");
 		expect(req.statusCode).toBe(200);
 		expect(req.body.success).toEqual(true);
 		expect(req.body.message).toEqual("Metrics obtained successfully.");
