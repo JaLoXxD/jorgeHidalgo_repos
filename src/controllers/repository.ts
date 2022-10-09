@@ -67,8 +67,10 @@ const mockRepositories = async (req: Request, res: Response) => {
 	try {
 		const reposData = await repositoryModel.findAll({
 			where: {
+				//FILTER ONLY MOCK REPOSITORIES
 				[Op.or]: [{ id_repository: 1 }, { id_repository: 2 }, { id_repository: 3 }],
 			},
+			//SELECT ONLY THE FOLLOWING FIELDS
 			attributes: [["id_repository", "id"], "state"],
 			replacements: ["D"],
 		});

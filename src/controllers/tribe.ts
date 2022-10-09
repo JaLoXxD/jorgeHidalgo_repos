@@ -6,6 +6,7 @@ export interface createTribeBody {
 	status: number;
 }
 
+//MOCK DATA
 const mockTribe = {
 	id_tribe: 1,
 	name: "Centro Digital",

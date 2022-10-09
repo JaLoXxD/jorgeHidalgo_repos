@@ -28,6 +28,7 @@ export class Server {
 		this._app.set("port", this._port);
 	}
 
+	//DATABASE RELATIONS
 	private _createAssociations() {
 		organizationModel.hasMany(tribeModel, { foreignKey: "id_organization", onDelete: "CASCADE" });
 		tribeModel.belongsTo(organizationModel, { foreignKey: "id_organization", onDelete: "CASCADE" });

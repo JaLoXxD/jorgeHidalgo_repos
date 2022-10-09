@@ -1,3 +1,4 @@
+//CONSTANTS USED TO MAP DATA IN METRICS CONTROLLER
 const verificationStateEnum = {
 	E: "Verificado",
 	D: "En espera",

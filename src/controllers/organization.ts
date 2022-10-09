@@ -36,6 +36,7 @@ const createOrganization = async (req: Request, res: Response) => {
 
 		let newMetrics;
 
+		//CREATE ALL REPOSITORIES AND METRICS
 		for (const repository of repositories) {
 			if (!repository.create_time) {
 				repository.create_time = new Date();
@@ -62,6 +63,7 @@ const createOrganization = async (req: Request, res: Response) => {
 
 const getOrganizations = async (req: Request, res: Response) => {
 	try {
+		//FIND ORGANIZATIONS AND RETURN THEIR TRIBES, REPOSITORIES AND METRICS
 		const organizations = await organizationModel.findAll({
 			include: [{ model: tribeModel, include: [{ model: repositoryModel, include: [{ model: metricsModel }] }] }],
 		});

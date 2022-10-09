@@ -12,6 +12,7 @@ export interface createMetricsBody {
 	code_smells: number;
 }
 
+//FIND REPOSITORIES BY TRIBE ID
 const repositoriesData = async (id: string) => {
 	const metrics = await tribeModel.findAll({
 		where: {
@@ -24,9 +25,10 @@ const repositoriesData = async (id: string) => {
 				model: repositoryModel,
 				where: {
 					status: {
-						[Op.eq]: "A",
+						[Op.eq]: "A", //SELECT ONLY ACTIVE REPOSITORIES
 					},
 					create_time: {
+                        //SELECT ONLY REPOSITORIES CREATED IN THE CURRENT YEAR
 						[Op.gte]: new Date(`${new Date().getFullYear()}-01-01T00:00:00`),
 					},
 				},
@@ -36,7 +38,7 @@ const repositoriesData = async (id: string) => {
 						model: metricsModel,
 						where: {
 							coverage: {
-								[Op.gte]: 75,
+								[Op.gte]: 75, //SELECT ONLY METRICS THAT HAVE COVERAGE GREATHER OR EQUAL THAN 75
 							},
 						},
 					},
@@ -48,6 +50,7 @@ const repositoriesData = async (id: string) => {
 		const plainData = repo.get({ plain: true });
 		const repoData = [];
 
+        //MAP RESPONSE
 		for (const repository of plainData.repositories) {
 			console.log(repository);
 			const repoInfo = {
@@ -122,13 +125,13 @@ const generateCsv = async (req: Request, res: Response) => {
 				message: "The tribe doesn't have repositories that meet the necessary necessary coverage",
 			});
 		}
-
+        //CREATE CSV FILE
 		const csvParse = new Parser();
 		const csvData = csvParse.parse(repos);
 
 		res.setHeader("Content-Type", "text/csv");
-		res.setHeader("Content-Disposition", "attachment; filename=tutorials.csv");
-
+		res.setHeader("Content-Disposition", "attachment; filename=repositories.csv");
+        //RETURN CSV FILE
 		return res.status(200).end(csvData);
 	} catch (err) {
 		console.log(err);
