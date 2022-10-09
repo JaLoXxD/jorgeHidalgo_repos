@@ -6,6 +6,10 @@ Node v16.16.0
 
 TS v^4.8.4
 
+## .env
+
+In this case I uploaded the .env file because this is a challenge and I want to the review could be complete.
+
 ## Steps to run it
 
 - First, clone the repository.
