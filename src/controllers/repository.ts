@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { repositoryModel } from "../models/repository";
 import { createMockTribe } from "./tribe";
 import { createMetricsBody } from "./metrics";
+import { Op } from "sequelize-cockroachdb";
 
 //MOCK DATA
 const repositories: Array<createRepositoryBody> = [
@@ -65,6 +66,9 @@ const createRepository = async (tribeId: number, body: createRepositoryBody, res
 const mockRepositories = async (req: Request, res: Response) => {
 	try {
 		const reposData = await repositoryModel.findAll({
+			where: {
+				[Op.or]: [{ id_repository: 1 }, { id_repository: 2 }, { id_repository: 3 }],
+			},
 			attributes: [["id_repository", "id"], "state"],
 			replacements: ["D"],
 		});
@@ -73,8 +77,6 @@ const mockRepositories = async (req: Request, res: Response) => {
 			const repoData = repo.get();
 			return { ...repoData, state: stateEnum[repoData.state] };
 		});
-
-		console.log(reposMock);
 
 		return res.status(200).json({
 			success: true,
